@@ -1,93 +1,79 @@
 import pygame
+from player import Player
+# from settings import Clock, Window
 
 pygame.init()
 
-win_height = 506
+win_height = 500
 win_width = 900
 win = pygame.display.set_mode((win_width, win_height))
 pygame.display.set_caption("First Game")
 
-walk_right = [pygame.image.load('images/run-00.png'), pygame.image.load('images/run-01.png'),
-              pygame.image.load('images/run-02.png'), pygame.image.load('images/run-03.png'),
-              pygame.image.load('images/run-04.png'), pygame.image.load('images/run-05.png')]
-walk_left = [pygame.image.load('images/run-00.png'), pygame.image.load('images/run-01.png'),
-             pygame.image.load('images/run-02.png'), pygame.image.load('images/run-03.png'),
-             pygame.image.load('images/run-04.png'), pygame.image.load('images/run-05.png')]
 bg = pygame.image.load('images/bg.jpg')
-char = pygame.image.load('images/idle-00.png')
+
+p = Player(win)
+# c = Clock()
+# w = Window()
 
 # variables
 clock = pygame.time.Clock()
+clockTime = 24
 
-player_x = 50
-player_y = 406
-player_width = 128
-player_height = 128
-player_vel = 5
+def playerAnimation():
+    if p.walk_count + 1 >= clockTime:
+        p.walk_count = 0
 
-is_jump = False
-jump_count = 10
-
-move_left = False
-move_right = False
-walk_count = 0
-
-
-def redraw_game_window():
-    global walk_count
-    win.blit(bg, (0, 0))
-
-    if walk_count + 1 >= 24:
-        walk_count = 0
-
-    if move_left:
-        win.blit(walk_left[walk_count//4], (player_x, player_y))
-        walk_count += 1
-    elif move_right:
-        win.blit(walk_right[walk_count//4], (player_x, player_y))
-        walk_count += 1
+    if p.moving_left:
+        win.blit(pygame.transform.flip(p.walk_anim[p.walk_count // 4], True, False), (p.player_x, p.player_y))
+        p.walk_count += 1
+    elif p.moving_right:
+        win.blit(p.walk_anim[p.walk_count // 4], (p.player_x, p.player_y))
+        p.walk_count += 1
     else:
-        win.blit(char, (player_x, player_y))
+        if p.direction == "Left":
+            win.blit(pygame.transform.flip(p.char, True, False), (p.player_x, p.player_y))
+        else:
+            win.blit(p.char, (p.player_x, p.player_y))
 
+
+def redrawGameWindow():
+    win.blit(bg, (0, 0))
+    playerAnimation()
     pygame.display.update()
 
 
 run = True
 while run:
-    clock.tick(24)
+    clock.tick(clockTime)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
 
-    keys = pygame.key.get_pressed()
+        # Keydown events
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
+                p.moving_right = True
+                p.moving_left = False
+                p.direction = "Right"
+            elif event.key == pygame.K_LEFT:
+                p.moving_left = True
+                p.moving_right = False
+                p.direction = "Left"
+            elif event.key == pygame.K_UP:
+                p.is_jump = True
 
-    if keys[pygame.K_LEFT] and player_x > player_vel:
-        player_x -= player_vel
-        move_left = True
-        move_right = False
+        # Keyup events
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_RIGHT:
+                p.moving_right = False
+            elif event.key == pygame.K_LEFT:
+                p.moving_left = False
+            elif event.key == pygame.K_UP:
+                p.is_jump = False
 
-    elif keys[pygame.K_RIGHT] and player_x < win_width - player_vel - player_width:
-        player_x += player_vel
-        move_right = True
-        move_left = False
-    else:
-        move_left = False
-        move_right = False
-        walk_count = 0
-    if not is_jump:
-        if keys[pygame.K_SPACE]:
-            is_jump = True
-            move_left = False
-            move_right = False
-            walk_count = 0
-    else:
-        if jump_count >= -10:
-            player_y -= (jump_count * abs(jump_count)) * 0.5
-            jump_count -= 1
-        else:
-            jump_count = 10
-            is_jump = False
-    redraw_game_window()
+    # w.drawGameWindow()
+    redrawGameWindow()
+    p.update()
 
 pygame.quit()
