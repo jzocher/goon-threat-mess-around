@@ -26,9 +26,11 @@ def playerAnimation():
     if p.moving_left:
         win.blit(pygame.transform.flip(p.walk_anim[p.walk_count // 4], True, False), (p.player_x, p.player_y))
         p.walk_count += 1
+        p.player_x -= p.player_speed
     elif p.moving_right:
         win.blit(p.walk_anim[p.walk_count // 4], (p.player_x, p.player_y))
         p.walk_count += 1
+        p.player_x += p.player_speed
     else:
         if p.direction == "Left":
             win.blit(pygame.transform.flip(p.char, True, False), (p.player_x, p.player_y))
