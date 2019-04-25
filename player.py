@@ -22,28 +22,29 @@ class Player:
         self.moving_right = False
         self.moving_left = False
         self.is_jump = False
-        self.jump_count = 10
+        self.jump_count = 5
         self.walk_count = 0
         self.player_x = 50
         self.player_y = 440
         self.playerPos = [self.player_x, self.player_y]
 
-        # Load the player image and set player and screen to rect.
-        self.image = self.char
-        self.rect = self.image.get_rect()
-        self.screen_rect = screen.get_rect()
+       # # Load the player image and set player and screen to rect.
+       # self.image = self.char
+       # self.rect = self.image.get_rect()
+       # self.screen_rect = screen.get_rect()
 
-        # Start the player at the bottom center of the screen.
-        self.rect.move(self.player_x, self.player_y)
+       # # Start the player at the bottom center of the screen.
+       # self.rect.move(self.player_x, self.player_y)
 
         # Speed of the player
         self.player_speed = 5
 
         self.direction = ['right', 'left']
 
+    # Not working
+    """
+    # Update the position of the player.
     def update(self):
-        """Update the position of the player."""
-
         if self.rect.right <= self.screen_rect.right:
             if self.moving_right:
                 self.rect.move(self.player_speed, 0)
@@ -51,21 +52,14 @@ class Player:
         if self.rect.left > 0:
             if self.moving_left:
                 self.rect.move(-self.player_speed, 0)
+    """
 
-'''
-    def playerAnimation(self):
-        if self.walk_count + 1 >= c.clockTime:
-            self.walk_count = 0
-
-        if self.moving_left:
-            w.win.blit(pygame.transform.flip(self.walk_anim[self.walk_count // 4], True, False), self.rect)
-            self.walk_count += 1
-        elif self.moving_right:
-            w.win.blit(self.walk_anim[self.walk_count // 4], self.rect)
-            self.walk_count += 1
-        else:
-            if self.direction == "Left":
-                w.win.blit(pygame.transform.flip(self.char, True, False), self.rect)
+    # Not working. Makes the player jump
+    def jump(self):
+        if self.is_jump:
+            if self.jump_count >= -5:
+                self.player_y -= (self.jump_count * abs(self.jump_count)) * 0.5
+                self.jump_count -= 1
             else:
-                w.win.blit(self.char, self.rect)
-'''
+                self.jump_count = 10
+                self.is_jump = False
